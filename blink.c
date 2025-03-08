@@ -26,18 +26,25 @@ void pico_set_led(bool led_on) {
 int main() {
     int rc = pico_led_init();
     hard_assert(rc == PICO_OK);
+    
     while (true) {
-        pico_set_led(true);
-        sleep_ms(LED_DELAY_MS);
-        pico_set_led(false);
-        sleep_ms(LED_DELAY_MS);
-        pico_set_led(true);
-        sleep_ms(LED_DELAY_MS);
-        pico_set_led(false);
-        sleep_ms(LED_DELAY_MS);
-        pico_set_led(true);
-        sleep_ms(LED_DELAY_MS);
-        pico_set_led(false);
-        sleep_ms(LED_DELAY_MS);
+        // Start with the initial delay
+        uint32_t current_delay = LED_DELAY_MS;
+        const float decay_factor = 0.9f;
+        const int num_iterations = 100; // Number of on/off cycles in the pattern
+        
+        // Loop through the pattern iterations
+        for (int i = 0; i < num_iterations; i++) {
+            // Turn LED on
+            pico_set_led(true);
+            sleep_ms(current_delay);
+            
+            // Turn LED off
+            pico_set_led(false);
+            sleep_ms(current_delay);
+            
+            // Calculate next delay
+            current_delay = (uint32_t)(current_delay * decay_factor);
+        }
     }
 }
